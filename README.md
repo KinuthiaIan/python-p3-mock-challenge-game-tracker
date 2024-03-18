@@ -4,8 +4,8 @@ For this assignment, we'll be working with a game tracking domain.
 
 We have three models: `Game`, `Player`, and `Result`.
 
-For our purposes, a `Game` has many `Result`s, a `Player` has many `Result`s,
-and a `Result` belongs to a `Player` and to a `Game`.
+For our purposes, a `Game` has many `Result`s, a `Player` has many
+`Result`s, and a `Result` belongs to a `Player` and to a `Game`.
 
 `Game` - `Player` is a many to many relationship.
 
@@ -22,15 +22,18 @@ start coding_. Remember to identify a single source of truth for your data.
 
 ## Instructions
 
-To get started, run `pipenv install` while inside of this directory. Then run
-`pipenv shell` to jump into the shell.
+To get started, run `pipenv install` while inside of this directory.
 
 Build out all of the methods listed in the deliverables. The methods are listed
 in a suggested order, but you can feel free to tackle the ones you think are
 easiest. Be careful: some of the later methods rely on earlier ones.
 
-**Remember!** This code challenge has tests to help you check your work. You can
-run `pytest` to make sure your code is functional before submitting.
+**Remember!** This code challenge has tests to help you check your work. You
+can run `pytest` to make sure your code is functional before submitting.
+
+> **NOTE: A number of tests will be passing before you make any changes. Keep an
+> eye on this number to make sure you're maintaining this app's functionality as
+> you write new code!**
 
 We've provided you with a tool that you can use to test your code. To use it,
 run `python debug.py` from the command line. This will start a `ipdb` session
@@ -61,117 +64,100 @@ build out any helper methods if needed.
 #### Game
 
 - `Game __init__(self, title)`
-  - `Game` is initialized with a title
+  - `Game` is initialized with a title (string)
+  - Title **cannot be** changed after the `Game` is initialized
 - `Game property title`
-  - Returns the game's title
-  - Titles must be of type `str`
-  - Titles must be longer than 0 characters
-  - Should **not be able** to change after the game is instantiated
-  - _hint: hasattr()_
+  - Returns the `Game`'s title
+  - Titles must be strings greater than 0 characters
+  - If you are using exceptions, uncomment lines 25-26 and 32-33 in
+    `testing/game_test.py`.
+    - `raise Exception` if setter fails
 
 #### Player
 
 - `Player __init__(self, username)`
-  - `Player` is initialized with a username
+  - `Player` is initialized with a username (string)
+  - Usernames **can be** changed after the Player is initialized
 - `Player property username`
-  - Returns the player's username
-  - Usernames must be of type `str`
-  - Usernames must be between 2 and 16 characters, inclusive.
-  - Should **be able** to change after the player is instantiated
+  - Returns the Player's username
+  - Usernames must be strings between 2 and 16 characters,
+    inclusive.
+  - If you are using exceptions, uncomment lines 25-29 in
+    `testing/player_test.py`.
+    - `raise Exception` if setter fails
 
 #### Result
 
 - `Result __init__(self, player, game, score)`
   - `Result` is initialized with a `Player` instance, a `Game` instance, and a
-    score.
+    score (number).
 - `Result property score`
-  - Returns the result's score
-  - Scores must be of type `int`
-  - Scores must be between 1 and 5000, inclusive
-  - Should **not be able** to change after the result is instantiated
-  - _hint: hasattr()_
+  - Returns the score for the `Result` instance
+  - Scores must be integers between 1 and 5000, inclusive
+    - If you are using exceptions, uncomment lines 20-30 in
+    `testing/result_test.py`.
+    - `raise Exception` if setter fails
 
-### Object Relationship Methods and Properties
+### Object Relationship Attributes and Properties
 
 #### Result
 
 - `Result property player`
-  - Returns the player object for that result
-  - Must be of type `Player`
+  - Returns the player for the Result
+  - Players must be `Player` instances
+  - `raise Exception` if setter fails
 - `Result property game`
-  - Returns the game object for that result
-  - Must be of type `Game`
+  - Returns the game that was played
+  - Games must be `Game` instances
+  - `raise Exception` if setter fails
 
 #### Player
 
-- `Player results()`
-
-  - Returns a list of all results for that player
-  - Results must be of type `Result`
-
-- `Player games_played()`
-  - Returns a **unique** list of all games played by a particular player
-  - Games must be of type `Game`
+- `Player results(self, new_result=None)`
+  - Adds new results to instance attribute `player._results` if `new_result`
+    exists.
+  - Returns a list of `Result` instances associated with the `Player` instance.
+  - _You will need to call this method in `Result.__init__()`._
+- `Player games_played(self)`
+  - Returns a list of `Game` instances played by the `Player` instance.
 
 #### Game
 
-- `Game results()`
-
-  - Returns a list of all results for that game
-  - Results must be of type `Result`
-
-- `Game players()`
-  - Returns a **unique** list of all players that played a particular game
-  - Players must be of type `Player`
+- `Game results(self, new_result=None)`
+  - Adds new results to instance attribute `game._results` if `new_result`
+    exists.
+  - Returns a list of `Result` instances associated with the `Game` instance.
+  - _You will need to call this method in `Result.__init__()`._
+- `Game players(self, new_player=None)`
+  - Adds new results to instance attribute `player._results` if `new_result`
+    exists.
+  - Returns a list of `Result` instances associated with the `Player` instance.
+  - _You will need to call this method in `Result.__init__()`._
 
 ### Aggregate and Association Methods
 
 #### Player
 
-- `Player played_game(game)`
-  - Receives a **game object** as argument
-  - Returns `True` if the player has played the game object provided
-  - Returns `False` otherwise
-- `Player num_times_played(game)`
-  - Receives a **game object** as argument
-  - Returns the number of times the player has played the game instance provided
-  - Returns 0 if the player never played the game provided
+- `Player played_game(self, game)`
+  - Returns `True` if the `Player` has played this `Game` (if there is a
+    `Result` instance that has this `Player` and `Game`), returns `False`
+    otherwise
+- `Player num_times_played(self, game)`
+  - Returns the number of times the `Player` instance has played (`Result`
+    instance created) the `Game` instance
 
 #### Game
 
-- `Game average_score(player)`
-  - Receives a **player object** as argument
-  - Returns the average of all the player's scores for a particular game
-    instance
-  - Reminder: you can calculate the average by adding up all the results' scores
-    of the player specified and dividing by the number of those results
+- `Game average_score(self, player)`
+  - Returns the average of all the player's scores for the `Game` instance
+  - To average scores, add all result scores together for the player and divide
+    by the total number of results for the player.
 
-### Bonus: Aggregate and Association Method
+#### Bonus: Aggregate and Association Method
 
-- `Player classmethod highest_scored(game)`
-  - Receives a **game object** as argument
-  - Returns the `Player` instance with the highest average score for the game
-    provided.
-  - Returns `None` if there are no players that played the game provided.
-  - _hint: will need a way to remember all player objects_
+- `Player classmethod highest_scored(cls, game)`
+  - Returns the `Player` instance with the highest average game score.
+  - Returns `None` if there are no players.
+  - _hint: will need a way to remember all `Player` objects_
   - _hint: do you have a method to get the average score on a game for a
     particular player?_
-  - Uncomment lines 151-161 in the player_test file
-
-### Bonus: For any invalid inputs raise an `Exception`.
-
-- First, **comment out** the following lines
-  - **game_test.py**
-    - lines 25-26
-  - **player_test.py**
-    - lines 25-26, 40-41, 44-45
-  - **result_test.py**
-    - lines 29-31
-- Then, **uncomment** the following lines in the test files
-  - **game_test.py**
-    - lines 29-30, 40-41
-  - **player_test.py**
-    - lines 29-30, 48-49, and 52-53
-  - **result_test.py**
-    - lines 34-35, 38-39, 50-51, and 54-55
-  
